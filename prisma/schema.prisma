@@ -15,10 +15,10 @@ datasource db {
 
 model Cards {
   id        Int      @id @default(autoincrement())
-  num       Int      @unique
+  num       Int      
   buyer     Int
   event     Int
-  nums      String   @unique
+  nums      String   
   price     Float
   available Boolean  @default(true)
   createdAt DateTime @default(now())

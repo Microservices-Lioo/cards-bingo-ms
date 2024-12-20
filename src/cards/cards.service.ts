@@ -3,6 +3,7 @@ import { Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/com
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { PrismaClient } from '@prisma/client';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class CardsService extends PrismaClient implements OnModuleInit {
@@ -25,6 +26,7 @@ export class CardsService extends PrismaClient implements OnModuleInit {
 
       existCard = await this.cards.findUnique({
         where: {
+          event: createCardDto.event,
           nums: card_nums
         }
       });
@@ -82,7 +84,7 @@ export class CardsService extends PrismaClient implements OnModuleInit {
       }
     });
 
-    if ( !card ) throw new NotFoundException('Card not found');
+    if ( !card ) throw new RpcException(`Card with id #${id} not found`);
 
     return card;
   }
@@ -94,12 +96,7 @@ export class CardsService extends PrismaClient implements OnModuleInit {
   async remove(id: number) {
 
     await this.findOne(id);
-
-    // return await this.cards.delete({
-    //   where: {
-    //     id: id
-    //   }
-    // });
+    
     return await this.cards.update({
       where: {
         id: id
